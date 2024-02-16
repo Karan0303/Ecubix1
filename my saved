@@ -1,0 +1,177 @@
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Data.SqlClient;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using System.Configuration;
+
+
+namespace insertform
+{
+    public partial class Form1 : Form
+    {
+        SqlConnection con = new SqlConnection("Data Source=10.168.16.78\\MSSQLSRV2019;Initial Catalog=SQLTraining;User ID=AWLDhrishti;Password=AWLDhrishti;Encrypt=False");
+        SqlCommand cmd;
+        SqlDataAdapter adapt;
+        
+        public Form1()
+        {
+            InitializeComponent();
+            SqlCommand showq = new SqlCommand("Select * from karan1", con);
+            SqlDataAdapter data = new SqlDataAdapter(showq);
+            DataTable dt = new DataTable();
+            data.Fill(dt);
+            dataGridView1.DataSource = dt;
+
+        }
+        
+        private void Name_box_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void Street_box_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void City_box_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void State_box_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void ZIP_box_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void Save_button_Click(object sender, EventArgs e)
+        {
+          
+
+           
+            con.Open();
+
+            cmd = new SqlCommand("Insert into karan1 values (@NAME ,@STREET,@CITY,@STATE,@ZIP)", con);
+            ///For the showing the Data
+
+
+
+            cmd.Parameters.AddWithValue("@NAME", Name_box.Text);
+            cmd.Parameters.AddWithValue("STREET", Street_box.Text);
+            cmd.Parameters.AddWithValue("@CITY", City_box.Text);
+            cmd.Parameters.AddWithValue("@STATE", State_box.Text);
+            cmd.Parameters.AddWithValue("@ZIP", int.Parse(ZIP_box.Text));
+            //cmd.Parameters.AddWithValue("@ID", int.Parse(ID_box.Text));
+
+            if (Name_box.Text == "" || Street_box.Text == "" || City_box.Text == "" || State_box.Text == "" || ZIP_box.Text == "" )
+            {
+                MessageBox.Show("please enter all the details");
+            }
+            else
+            {
+                cmd.ExecuteNonQuery();
+
+                SqlCommand showq = new SqlCommand("Select * from karan1", con);
+                SqlDataAdapter data = new SqlDataAdapter(showq);
+                DataTable dt = new DataTable();
+                data.Fill(dt);
+                dataGridView1.DataSource = dt;
+
+
+                con.Close();
+                MessageBox.Show("Data is Sucessfully saved");
+
+
+
+            }
+        }
+       
+       
+        private void Name_lable_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void City_lable_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void Street_lable_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void State_lable_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void ZIP_lable_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void ID_box_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void Clear_button_Click(object sender, EventArgs e)
+        {
+            Name_box.Clear();
+            Street_box.Clear();
+            City_box.Clear();
+            State_box.Clear();
+            ZIP_box.Clear();
+        }
+
+        private void Remove_btn_Click(object sender, EventArgs e)
+        {
+            //if (dataGridView1.SelectedRows.Count > 0)
+            // {
+            con.Open();
+            int id = Convert.ToInt32(dataGridView1.SelectedRows[0].Cells["ID"].Value);
+                //MessageBox.Show(Convert.ToString(id));
+                cmd = new SqlCommand($"DELETE FROM karan1 WHERE ID = {id}", con);
+                
+
+                //cmd.Parameters.AddWithValue("@id", id);
+                cmd.ExecuteNonQuery();
+               
+            cmd = new SqlCommand("Select * from karan1", con);
+            cmd.ExecuteNonQuery();
+
+            //
+            SqlCommand showq = new SqlCommand("Select * from karan1", con);
+            SqlDataAdapter data = new SqlDataAdapter(showq);
+            DataTable dt = new DataTable();
+            data.Fill(dt);
+            dataGridView1.DataSource = dt;
+            //
+            con.Close();
+            MessageBox.Show("Record Deleted Successfully!");
+
+
+            //  }
+            // else
+            // {
+            //     MessageBox.Show("Please select a row to delete.");
+            // }
+        }
+
+    }
+
+}
+
