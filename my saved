@@ -9,6 +9,11 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Configuration;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
+using System.Reflection.Emit;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.ToolBar;
+using System.IO;
+using System.Data.OleDb;
 
 
 namespace insertform
@@ -198,18 +203,7 @@ namespace insertform
                     con.Close();
                 }
             }
-            /*
-            try {
-                if (Convert.ToString(ZIP_box.Text).Length == 6)
-                {
-                    
-                }
-            }
-            catch(Exception ex)
-            {
-                MessageBox.Show("Please Enter 6 digit ZIP_code");
-            }
-            */
+            
         }
        
        
@@ -254,11 +248,10 @@ namespace insertform
 
         private void Remove_btn_Click(object sender, EventArgs e)
         {
-            //if (dataGridView1.SelectedRows.Count > 0)
-            // {
+            
             con.Open();
             int id = Convert.ToInt32(dataGridView1.SelectedRows[0].Cells["ID"].Value);
-                //MessageBox.Show(Convert.ToString(id));
+               
             cmd = new SqlCommand($"DELETE FROM karan1 WHERE ID = {id}", con);
                 
 
@@ -279,11 +272,6 @@ namespace insertform
             MessageBox.Show("Record Deleted Successfully!");
 
 
-            //  }
-            // else
-            // {
-            //     MessageBox.Show("Please select a row to delete.");
-            // }
         }
 
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
@@ -364,7 +352,7 @@ namespace insertform
             xlWbook = xlapp.Workbooks.Add(miseddata);
 
             xlsheet = (Microsoft.Office.Interop.Excel.Worksheet)xlWbook.Worksheets.get_Item(1);
-            Microsoft.Office.Interop.Excel.Range xlr = (Microsoft.Office.Interop.Excel.Range)xlsheet.Cells[1, 1];
+            Microsoft.Office.Interop.Excel.Range xlr = (Microsoft.Office.Interop.Excel.Range)xlsheet.Cells[1,1];
             xlr.Select();
 
             xlsheet.PasteSpecial(xlr, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing, true);
@@ -402,8 +390,8 @@ namespace insertform
                     }
                 }
             }
-            
-           
+
+            con.Close();
 
         }
 
@@ -474,8 +462,110 @@ namespace insertform
          
         }
 
-      
-    }
+        private void Upload_btn_Click(object sender, EventArgs e)
+        {
+            con.Open();
+            try
+            {
+                string filePath = Browse_box.Text;
 
-}
+                // Check if a file is selected
+                if (string.IsNullOrEmpty(filePath))
+                {
+                    MessageBox.Show("Please select a file to upload.");
+                    return;
+                }
+
+                // Connection string for Excel
+                string excelConnectionString = $"Provider=Microsoft.ACE.OLEDB.12.0;Data Source={filePath}; Extended Properties='Excel 12.0; HDR = YES'";
+
+                using (OleDbConnection excelConnection = new OleDbConnection(excelConnectionString))
+                {
+                    excelConnection.Open();
+
+                    // Get the first sheet name
+                    DataTable dtExcelSchema = excelConnection.GetOleDbSchemaTable(OleDbSchemaGuid.Tables, null);
+                    string sheetName = dtExcelSchema.Rows[0]["TABLE_NAME"].ToString();
+
+                    // Read data from Excel
+                    string query = $"SELECT * FROM [{sheetName}]";
+                    using (OleDbDataAdapter dataAdapter = new OleDbDataAdapter(query, excelConnection))
+                    {
+                        DataTable dt = new DataTable();
+                        dataAdapter.Fill(dt);
+
+                        // Import data into SQL Server table
+                        using (SqlBulkCopy bulkCopy = new SqlBulkCopy(con))
+                        {
+                            bulkCopy.DestinationTableName = "karan1";
+                            foreach (DataColumn col in dt.Columns)
+                            {
+                                bulkCopy.ColumnMappings.Add(col.ColumnName, col.ColumnName);
+                            }
+                            bulkCopy.WriteToServer(dt);
+
+                            MessageBox.Show("Data imported successfully!");
+                            Display(); // Refresh the grid after importing data
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"An error occurred: {ex.Message}");
+            }
+
+        }
+
+
+
+        private void openFileDialog1_FileOk(object sender, CancelEventArgs e)
+        {
+        }
+
+        private void Final_btn_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void Browse_btn_Click(object sender, EventArgs e)
+        {
+
+            
+            
+            openFileDialog1.InitialDirectory = "C://Desktop";
+            //Your opendialog box title name.
+            openFileDialog1.Title = "Select file to be upload.";
+            //which type file format you want to upload in database. just add them.
+            openFileDialog1.Filter = "Select Valid Document(*.pdf; *.doc; *.xlsx; *.html)|*.pdf; *.docx; *.xlsx; *.html";
+            //FilterIndex property represents the index of the filter currently selected in the file dialog box.
+            openFileDialog1.FilterIndex = 1;
+            try
+            {
+                if (openFileDialog1.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                {
+                    if (openFileDialog1.CheckFileExists)
+                    {
+                        string path = System.IO.Path.GetFullPath(openFileDialog1.FileName);
+                        Browse_box.Text = path;
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("Please Upload document.");
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+            
+        }
+
+        private void Browse_box_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+    }
+    }
 
