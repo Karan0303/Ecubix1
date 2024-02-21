@@ -41,9 +41,12 @@ namespace insertform
         private Rectangle Pattern_lbl;
         private Rectangle Filter_lbl;
         private Rectangle Remove_layout;
-        private Rectangle Update_layout;
+        //private Rectangle Update_layout;
         private Rectangle Refresh_layout;
         private Rectangle Download_layout;
+        private Rectangle Browse_layout;
+        private Rectangle Upload_layout;
+        private Rectangle Browse_lbox;
         private Rectangle Datagrid_layout;
 
         public Form1()
@@ -71,9 +74,14 @@ namespace insertform
             Filter_lbl = new Rectangle(Filter_lable.Location, Filter_lable.Size);
 
             Remove_layout = new Rectangle(Remove_btn.Location, Remove_btn.Size);
-            Update_layout = new Rectangle(Update_btn.Location, Update_btn.Size);
+            //Update_layout = new Rectangle(Update_btn.Location, Update_btn.Size);
             Refresh_layout = new Rectangle(Refresh_btn.Location, Refresh_btn.Size);
             Download_layout = new Rectangle(Download_btn.Location, Download_btn.Size);
+
+            Browse_layout = new Rectangle(Browse_btn.Location, Browse_btn.Size);
+            Upload_layout = new Rectangle(Upload_btn.Location, Upload_btn.Size);
+            Browse_lbox = new Rectangle(Browse_box.Location, Browse_box.Size);
+
             Datagrid_layout = new Rectangle(dataGridView1.Location, dataGridView1.Size);
 
         }
@@ -105,9 +113,13 @@ namespace insertform
 
 
             resize_Control(Remove_btn, Remove_layout);
-            resize_Control(Update_btn, Update_layout);
+           // resize_Control(Update_btn, Update_layout);
             resize_Control(Refresh_btn, Refresh_layout);
             resize_Control(Download_btn, Download_layout);
+            resize_Control(Browse_btn, Browse_layout);
+            resize_Control(Upload_btn, Upload_layout);
+            resize_Control(Browse_box, Browse_lbox);
+
 
             resize_Control(dataGridView1, Datagrid_layout);
 
@@ -166,44 +178,100 @@ namespace insertform
 
         private void Save_button_Click(object sender, EventArgs e)
         {
+           
+            // int id = dataGridView1.SelectedCells.Count;
+            int id;
 
-
-            try
+            if (dataGridView1.SelectedRows.Count > 0)
             {
                 con.Open();
+                id = Convert.ToInt32(dataGridView1.SelectedRows[0].Cells["ID"].Value);
+                //int id =  
 
-                cmd = new SqlCommand("Insert into karan1 values (@NAME ,@STREET,@CITY,@STATE,@ZIP)", con);
-
-                cmd.Parameters.AddWithValue("@NAME", Name_box.Text);
-                cmd.Parameters.AddWithValue("STREET", Street_box.Text);
-                cmd.Parameters.AddWithValue("@CITY", City_box.Text);
-                cmd.Parameters.AddWithValue("@STATE", State_box.Text);
-                cmd.Parameters.AddWithValue("@ZIP", int.Parse(ZIP_box.Text));
-
-                if (string.IsNullOrWhiteSpace(Name_box.Text) || string.IsNullOrWhiteSpace(Street_box.Text) || string.IsNullOrWhiteSpace(City_box.Text) || string.IsNullOrWhiteSpace(State_box.Text) || string.IsNullOrWhiteSpace(ZIP_box.Text))
+                try
                 {
-                    MessageBox.Show("Please enter all the details");
-                }
-                else
-                {
-                    MessageBox.Show("Data is successfully saved");
+                    // SqlDataReader reader = cmd.ExecuteReader();
+
+                    //SqlCommand cmd = new SqlCommand($"update karan1 set NAME='{Name_box.Text}',STREET='{Street_box.Text}',CITY='{City_box.Text}',STATE='{State_box.Text}',ZIP='{Convert.ToInt32(ZIP_box.Text)}' where ID={id}  ", con);
+                    cmd = new SqlCommand("dbo.Karan_Insert", con);
+                    cmd.CommandType = CommandType.StoredProcedure;
+                   //cmd.Parameters.AddWithValue("@ID", Convert.ToInt32(dataGridView1.SelectedRows[0].Cells["ID"].Value));
+                    cmd.Parameters.AddWithValue("@action", "UpdateName");
+                    cmd.Parameters.AddWithValue("@NAME", Name_box.Text);
+                    cmd.Parameters.AddWithValue("STREET", Street_box.Text);
+                    cmd.Parameters.AddWithValue("@CITY", City_box.Text);
+                    cmd.Parameters.AddWithValue("@STATE", State_box.Text);
+                    cmd.Parameters.AddWithValue("@ZIP", int.Parse(ZIP_box.Text));
+
+
                     cmd.ExecuteNonQuery();
                     Display();
-                    
+                    MessageBox.Show("Data is successfully Updated");
+
                 }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"An error occurred: {ex.Message}");
-            }
-            finally
-            {
-                if (con.State == ConnectionState.Open)
+                catch (Exception ex)
                 {
-                    con.Close();
+                    MessageBox.Show($"An error occurred: {ex.Message}");
+                }
+                finally
+                {
+                    if (con.State == ConnectionState.Open)
+                    {
+                        con.Close();
+                    }
+                }
+
+
+                con.Close();
+
+
+            }
+
+            else
+            {
+
+                try
+                {
+                    con.Open();
+                    // cmd = new SqlCommand($"exec [dbo].[Karan_Insert] @action='InsertName'", con);
+
+                    // cmd = new SqlCommand("Insert into karan1 values (@NAME ,@STREET,@CITY,@STATE,@ZIP)", con);
+                    cmd = new SqlCommand("dbo.Karan_Insert", con);
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@action", "InsertName");
+                    cmd.Parameters.AddWithValue("@NAME", Name_box.Text);
+                    cmd.Parameters.AddWithValue("STREET", Street_box.Text);
+                    cmd.Parameters.AddWithValue("@CITY", City_box.Text);
+                    cmd.Parameters.AddWithValue("@STATE", State_box.Text);
+                    cmd.Parameters.AddWithValue("@ZIP", int.Parse(ZIP_box.Text));
+                  
+                    
+                    if (string.IsNullOrWhiteSpace(Name_box.Text) || string.IsNullOrWhiteSpace(Street_box.Text) || string.IsNullOrWhiteSpace(City_box.Text) || string.IsNullOrWhiteSpace(State_box.Text) || string.IsNullOrWhiteSpace(ZIP_box.Text))
+                    {
+                        MessageBox.Show("Please enter all the details");
+                    }
+                    else
+                    {
+                        MessageBox.Show("Data is successfully saved");
+                        cmd.ExecuteNonQuery();
+                        Display();
+
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"An error occurred: {ex.Message}");
+                }
+                finally
+                {
+                    if (con.State == ConnectionState.Open)
+                    {
+                        con.Close();
+                    }
                 }
             }
-            
+           
+         
         }
        
        
@@ -251,22 +319,25 @@ namespace insertform
             
             con.Open();
             int id = Convert.ToInt32(dataGridView1.SelectedRows[0].Cells["ID"].Value);
-               
-            cmd = new SqlCommand($"DELETE FROM karan1 WHERE ID = {id}", con);
-                
 
-                //cmd.Parameters.AddWithValue("@id", id);
+            //cmd = new SqlCommand($"DELETE FROM karan1 WHERE ID = {id}", con);
+
+            cmd = new SqlCommand("dbo.Karan_Insert", con);
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.AddWithValue("@action", "RemoveName");
+            cmd.Parameters.AddWithValue("@ID", Convert.ToInt32(dataGridView1.SelectedRows[0].Cells["ID"].Value));
+            //cmd.Parameters.AddWithValue("@id", id);
             cmd.ExecuteNonQuery();
                
             cmd = new SqlCommand("Select * from karan1", con);
             cmd.ExecuteNonQuery();
 
-            
-            SqlCommand showq = new SqlCommand("Select * from karan1", con);
-            SqlDataAdapter data = new SqlDataAdapter(showq);
-            DataTable dt = new DataTable();
-            data.Fill(dt);
-            dataGridView1.DataSource = dt;
+            Display();
+            //SqlCommand showq = new SqlCommand("Select * from karan1", con);
+           // SqlDataAdapter data = new SqlDataAdapter(showq);
+            //DataTable dt = new DataTable();
+            //data.Fill(dt);
+            //dataGridView1.DataSource = dt;
             
             con.Close();
             MessageBox.Show("Record Deleted Successfully!");
@@ -357,7 +428,7 @@ namespace insertform
 
             xlsheet.PasteSpecial(xlr, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing, true);
         }
-      
+      /*
         private void Update_btn_Click(object sender, EventArgs e)
         {
            
@@ -394,11 +465,18 @@ namespace insertform
             con.Close();
 
         }
-
+      */
         private void dataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
         {
+            //int kp = dataGridView1.SelectedCells.Count;
+           // int id = Convert.ToInt32(dataGridView1.SelectedRows[0].Cells["ID"].Value);
+            //Console.Write(id);
+            //MessageBox.Show(id);
 
-            int id = Convert.ToInt32(dataGridView1.SelectedRows[0].Cells["ID"].Value);
+
+
+           int id = Convert.ToInt32(dataGridView1.SelectedRows[0].Cells["ID"].Value);
+           // Console.Write(id);
             con.Open();
             SqlCommand cmd = new SqlCommand($"select*from karan1 where ID = {id}", con);
             cmd.ExecuteNonQuery();
@@ -565,6 +643,16 @@ namespace insertform
         private void Browse_box_TextChanged(object sender, EventArgs e)
         {
 
+        }
+
+        private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+            dataGridView1.TabStop = false;
+        }
+
+        private void dataGridView1_DataBindingComplete(object sender, DataGridViewBindingCompleteEventArgs e)
+        {
+            dataGridView1.ClearSelection();
         }
     }
     }
