@@ -1,0 +1,157 @@
+i have project of windows application that have many pages like tables Login_Details	
+	// this is table structure
+-intGlCode	int
+-fk_EmpGlCode	int
+-dtLoginDateTime	datetime
+-dtLogOutDateTime	datetime
+		// this is page structure
+	Login	Administrator
+		
+	Password	*******
+		
+	Login(button)	
+,,,,,
+	Priority_mst	
+		
+	intGlCode	int
+	varPriority	Varchar(50)
+	chkActive	Char(1)
+Priority		
+Active [check box]		
+
+,,,
+Status_mst	
+	
+intGlCode	int
+varStatus	Varchar(50)
+chkActive	Char(1)
+
+Status	(checkbox)	
+Active [check box]		
+		
+	Save(button)	Cancel(button)
+,,,,,
+	
+Employee_mst	
+	
+intGlCode	int
+varEmpName	Varchar(200)
+varLoginId	Varchar(200)
+varPassword	Varchar(200)
+varEmail	Varchar(200)
+dtDOB	datetime
+varSecutityLevel	Varchar(50)
+
+
+Login			
+Password			
+Security Level	V		
+Name			
+Email			
+DOB			
+	Save	Delete	Cancel
+
+,,,
+Project_mst	
+	
+intGlCode	int
+varProjectName	Varchar(200)
+fk_EmpGlCode	int
+
+Project Name			
+			
+Responsible Use (combo box)		
+			
+	Save	Delete	Cancel
+
+,,,,
+Bug_Details	
+	
+intGlCode	int
+fk_ProjectGlCode	int
+fk_PriorityGlCode	int
+fk_EmpGlCodeAssignedTo	int
+fk_StatusGlCode	int
+varBugName	Varchar(200)
+varBugDesc	Varchar(500)
+dtDateAssigned	datetime
+varBugResolution	Varchar(500)
+dtDateResolved	datetime
+
+
+
+Bug Name			
+Bug Description			
+Project	V		
+Priority	V		
+Assigned By	Administrator		
+Assigned To	V		
+Date Assigned			Date selector
+Status	V		
+Date Resolved			Date selector
+Resolution			
+			
+	Save	Delete	Cancel
+
+
+//////////////////////////////////////////////////
+Priority_mst
+
+		
+Sr No	Priority	Active
+1	Highest	Yes
+2	High	Yes
+3	Normal	Yes
+4	Low	Yes
+5	Lowest	Yes
+6	Minimal	No
+,,,
+Status_mst
+		
+Sr No	Status	Active
+1	Open	Yes
+2	On hold	Yes
+3	Closed	Yes
+4	In progress	No
+
+,,,,,
+Employee_mst
+
+Sr No	Employee Name	Login	Password	Email	DOB	Security Level
+1	Administrator	admin	admin	admin@nowhere.com	12-05-1985	Administrator
+3	James Globus	james	james	james@nowhere.com	12-05-1985	Developer
+4	Bob Morton	bob	bob	bob@nowhere.com	12-05-1985	Developer
+5	Terry Lincoln	terry	terry	terry@nowhere.com	12-05-1985	Developer
+6	Steve Wolf	steve	steve	steve@nowhere.com	12-05-1985	Developer
+7	Guest	guest	guest	guest@nowhere.com	12-05-1985	Developer
+8	S. Jason Paul	Jason	Jason	jasonpaul@gmail.com	12-05-1985	Developer
+9	S.Venkatesan	Venkatesan	Venkatesan	venkat@gmail.com	12-05-1985	Administrator
+
+,,,,,
+Project_mst
+
+Sr No	Project	Resonsible User
+1	CodeCharge 	Administrator 
+2	Great Project 	James Globus 
+3	HERM PROJECT 	James Globus 
+4	My Project 	Terry Lincoln 
+,,,,
+
+Bug_Details
+Sr No	Bug	Project	Priority	Assigned to 	Status
+1	Remove ListOfValues	CodeCharge 	Highest	James Globus	Open
+3	Rename URL to Param	Great Project 	High	Bob Morton	On hold
+4	Show ADO property page	HERM PROJECT 	Normal	Terry Lincoln	Closed
+5	Add: ODBC	My Project 	Low	Steve Wolf	In progress
+6	Create buttons instead of links	CodeCharge 	Lowest	Guest	Open
+7	Error during generation	Great Project 	Minimal	S. Jason Paul	On hold
+8	Object Not Found	HERM PROJECT 	Minimal	S.Venkatesan	Closed
+9	Logical Error	My Project 	Minimal	Guest	In progress
+10	Date Error	HERM PROJECT 	Low	S. Jason Paul	In progress
+
+
+
+
+
+		
+
